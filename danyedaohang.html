@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI工具与开发资源导航站</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .language-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .lang-btn {
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            font-size: 0.9rem;
+        }
+
+        .lang-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .lang-btn.active {
+            background: rgba(255,255,255,0.4);
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem 0;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-container {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .search-box {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 50px;
+            background: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            box-shadow: 0 4px 30px rgba(0,0,0,0.2);
+            transform: translateY(-2px);
+        }
+
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .category-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .category-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-right: 1rem;
+            color: white;
+        }
+
+        .ai-tools { background: linear-gradient(135deg, #ff6b6b, #ee5a24); }
+        .search-tools { background: linear-gradient(135deg, #4834d4, #6c5ce7); }
+        .dev-resources { background: linear-gradient(135deg, #00d2d3, #01a3a4); }
+        .analytics { background: linear-gradient(135deg, #feca57, #ff9ff3); }
+
+        .category-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .tool-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .tool-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef;
+        }
+
+        .tool-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .tool-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 18px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .tool-info {
+            flex: 1;
+        }
+
+        .tool-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: #2c3e50;
+        }
+
+        .tool-desc {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            line-height: 1.4;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: rgba(255,255,255,0.8);
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            min-width: 120px;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            display: block;
+        }
+
+        .stat-label {
+            color: rgba(255,255,255,0.9);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .categories {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats {
+                gap: 1rem;
+            }
+
+            .language-switcher {
+                position: relative;
+                top: auto;
+                right: auto;
+                justify-content: center;
+                margin-bottom: 1rem;
+            }
+        }
+
+        .filter-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .filter-tab:hover,
+        .filter-tab.active {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="language-switcher">
+            <button class="lang-btn active" data-lang="zh">中文</button>
+            <button class="lang-btn" data-lang="en">English</button>
+        </div>
+
+        <header class="header">
+            <h1 data-zh="🚀 AI工具与开发资源导航" data-en="🚀 AI Tools & Dev Resources Hub">🚀 AI工具与开发资源导航</h1>
+            <p data-zh="发现最新的AI工具、搜索资源和开发利器，提升你的工作效率" data-en="Discover the latest AI tools, search resources, and development utilities to boost your productivity">发现最新的AI工具、搜索资源和开发利器，提升你的工作效率</p>
+        </header>
+
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="搜索工具、资源或关键词..." id="searchInput" data-zh-placeholder="搜索工具、资源或关键词..." data-en-placeholder="Search tools, resources, or keywords...">
+            </div>
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-filter="all" data-zh="全部" data-en="All">全部</button>
+                <button class="filter-tab" data-filter="ai-tools" data-zh="AI工具" data-en="AI Tools">AI工具</button>
+                <button class="filter-tab" data-filter="search" data-zh="搜索优化" data-en="SEO Tools">搜索优化</button>
+                <button class="filter-tab" data-filter="dev" data-zh="开发资源" data-en="Dev Resources">开发资源</button>
+                <button class="filter-tab" data-filter="analytics" data-zh="数据分析" data-en="Analytics">数据分析</button>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <span class="stat-number">500+</span>
+                <span class="stat-label" data-zh="AI工具" data-en="AI Tools">AI工具</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">100+</span>
+                <span class="stat-label" data-zh="搜索工具" data-en="Search Tools">搜索工具</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">50+</span>
+                <span class="stat-label" data-zh="开发资源" data-en="Dev Resources">开发资源</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">24/7</span>
+                <span class="stat-label" data-zh="在线服务" data-en="Online Service">在线服务</span>
+            </div>
+        </div>
+
+        <div class="categories" id="categoriesContainer">
+            <div class="category-card" data-category="ai-tools">
+                <div class="category-header">
+                    <div class="category-icon ai-tools">🤖</div>
+                    <h3 class="category-title" data-zh="AI工具平台" data-en="AI Tool Platforms">AI工具平台</h3>
+                </div>
+                <div class="tool-grid">
+                    <a href="https://www.toolify.ai/" target="_blank" class="tool-item">
+                        <div class="tool-icon ai-tools">🛠️</div>
+                        <div class="tool-info">
+                            <div class="tool-name">Toolify AI</div>
+                            <div class="tool-desc" data-zh="发现最新的AI工具，获取收入数据和使用统计" data-en="Discover the latest AI tools with revenue data and usage statistics">发现最新的AI工具，获取收入数据和使用统计</div>
+                        </div>
+                    </a>
+                    <a href="https://theresanaiforthat.com/requests" target="_blank" class="tool-item">
+                        <div class="tool-icon ai-tools">💡</div>
+                        <div class="tool-info">
+                            <div class="tool-name">There's An AI For That</div>
+                            <div class="tool-desc" data-zh="最全的AI工具数据库，满足各种需求" data-en="The most comprehensive AI tools database for every need">最全的AI工具数据库，满足各种需求</div>
+                        </div>
+                    </a>
+                    <a href="https://openai.com/chatgpt" target="_blank" class="tool-item">
+                        <div class="tool-icon ai-tools">💬</div>
+                        <div class="tool-info">
+                            <div class="tool-name">ChatGPT</div>
+                            <div class="tool-desc" data-zh="强大的对话AI助手，支持多种任务" data-en="Powerful conversational AI assistant for various tasks">强大的对话AI助手，支持多种任务</div>
+                        </div>
+                    </a>
+                    <a href="https://claude.ai" target="_blank" class="tool-item">
+                        <div class="tool-icon ai-tools">🧠</div>
+                        <div class="tool-info">
+                            <div class="tool-name">Claude</div>
+                            <div class="tool-desc" data-zh="Anthropic开发的AI助手，专注安全性" data-en="AI assistant by Anthropic, focused on safety">Anthropic开发的AI助手，专注安全性</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="category-card" data-category="search">
+                <div class="category-header">
+                    <div class="category-icon search-tools">🔍</div>
+                    <h3 class="category-title" data-zh="搜索优化工具" data-en="SEO & Search Tools">搜索优化工具</h3>
+                </div>
+                <div class="tool-grid">
+                    <a href="https://www.searchsuggest.tips/" target="_blank" class="tool-item">
+                        <div class="tool-icon search-tools">📊</div>
+                        <div class="tool-info">
+                            <div class="tool-name">Search Suggest</div>
+                            <div class="tool-desc" data-zh="获取搜索建议和关键词灵感" data-en="Get search suggestions and keyword inspiration">获取搜索建议和关键词灵感</div>
+                        </div>
+                    </a>
+                    <a href="https://ahrefs.com/zh/keyword-difficulty/" target="_blank" class="tool-item">
+                        <div class="tool-icon search-tools">📈</div>
+                        <div class="tool-info">
+                            <div class="tool-name">Ahrefs Keyword Difficulty</div>
+                            <div class="tool-desc" data-zh="分析关键词竞争难度和SEO机会" data-en="Analyze keyword competition difficulty and SEO opportunities">分析关键词竞争难度和SEO机会</div>
+                        </div>
+                    </a>
+                    <a href="https://trends.google.com" target="_blank" class="tool-item">
+                        <div class="tool-icon search-tools">📱</div>
+                        <div class="tool-info">
+                            <div class="tool-name">Google Trends</div>
+                            <div class="tool-desc" data-zh="查看关键词搜索趋势和热度" data-en="View keyword search trends and popularity">查看关键词搜索趋势和热度</div>
+                        </div>
+                    </a>
+                    <a href="https://answerthepublic.com" target="_blank" class="tool-item">
+                        <div class="tool-icon search-tools">❓</div>
+                        <div class="tool-info">
+                            <div class="tool-name">Answer The Public</div>
+                            <div class="tool-desc" data-zh="发现用户真实搜索问题" data-en="Discover real user search questions">发现用户真实搜索问题</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="category-card" data-category="dev">
+                <div class="category-header">
+                    <div class="category-icon dev-resources">⚡</div>
+                    <h3 class="category-title" data-zh="开发资源" data-en="Development Resources">开发资源</h3>
+                </div>
+                <div class="tool-grid">
+                    <a href="https://github.com/ddahan/ui-libs" target="_blank" class="tool-item">
+                        <div class="tool-icon dev-resources">🎨</div>
+                        <div class="tool-info">
+                            <div class="tool-name">UI Libraries</div>
+                            <div class="tool-desc" data-zh="精选的UI组件库和设计系统" data-en="Curated UI component libraries and design systems">精选的UI组件库和设计系统</div>
+                        </div>
+                    </a>
+                    <a href="https://github.com/WebStackPage/WebStackPage.github.io" target="_blank" class="tool-item">
+                        <div class="tool-icon dev-resources">🌐</div>
+                        <div class="tool-info">
+                            <div class="tool-name">WebStack</div>
+                            <div class="tool-desc" data-zh="开源导航站模板和资源" data-en="Open source navigation site templates and resources">开源导航站模板和资源</div>
+                        </div>
+                    </a>
+                    <a href="https://github.com" target="_blank" class="tool-item">
+                        <div class="tool-icon dev-resources">🐙</div>
+                        <div class="tool-info">
+                            <div class="tool-name">GitHub</div>
+                            <div class="tool-desc" data-zh="全球最大的代码托管平台" data-en="The world's largest code hosting platform">全球最大的代码托管平台</div>
+                        </div>
+                    </a>
+                    <a href="https://stackoverflow.com" target="_blank" class="tool-item">
+                        <div class="tool-icon dev-resources">💻</div>
+                        <div class="tool-info">
+                            <div class="tool-name">Stack Overflow</div>
+                            <div class="tool-desc" data-zh="程序员问答社区，解决编程问题" data-en="Developer Q&A community for programming solutions">程序员问答社区，解决编程问题</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="category-card" data-category="analytics">
+                <div class="category-header">
+                    <div class="category-icon analytics">📊</div>
+                    <h3 class="category-title" data-zh="数据分析" data-en="Data Analytics">数据分析</h3>
+                </div>
+                <div class="tool-grid">
+                    <a href="https://analytics.google.com" target="_blank" class="tool-item">
+                        <div class="tool-icon analytics">📈</div>
+                        <div class="tool-info">
+                            <div class="tool-name">Google Analytics</div>
+                            <div class="tool-desc" data-zh="网站流量分析和用户行为追踪" data-en="Website traffic analysis and user behavior tracking">网站流量分析和用户行为追踪</div>
+                        </div>
+                    </a>
+                    <a href="https://semrush.com" target="_blank" class="tool-item">
+                        <div class="tool-icon analytics">🎯</div>
+                        <div class="tool-info">
+                            <div class="tool-name">SEMrush</div>
+                            <div class="tool-desc" data-zh="竞争对手分析和市场研究" data-en="Competitor analysis and market research">竞争对手分析和市场研究</div>
+                        </div>
+                    </a>
+                    <a href="https://mixpanel.com" target="_blank" class="tool-item">
+                        <div class="tool-icon analytics">📊</div>
+                        <div class="tool-info">
+                            <div class="tool-name">Mixpanel</div>
+                            <div class="tool-desc" data-zh="产品分析和用户行为追踪" data-en="Product analytics and user behavior tracking">产品分析和用户行为追踪</div>
+                        </div>
+                    </a>
+                    <a href="https://hotjar.com" target="_blank" class="tool-item">
+                        <div class="tool-icon analytics">🔥</div>
+                        <div class="tool-info">
+                            <div class="tool-name">Hotjar</div>
+                            <div class="tool-desc" data-zh="用户行为录制和热力图分析" data-en="User behavior recording and heatmap analysis">用户行为录制和热力图分析</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p data-zh="&copy; 2025 AI工具导航站. 发现最新的AI工具和开发资源，提升工作效率." data-en="&copy; 2025 AI Tools Navigation. Discover the latest AI tools and development resources to boost productivity.">&copy; 2025 AI工具导航站. 发现最新的AI工具和开发资源，提升工作效率.</p>
+        </footer>
+    </div>
+
+    <script>
+        // 语言切换功能
+        const langButtons = document.querySelectorAll('.lang-btn');
+        let currentLang = 'zh';
+
+        function switchLanguage(lang) {
+            currentLang = lang;
+            
+            // 更新按钮状态
+            langButtons.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === lang);
+            });
+
+            // 更新所有文本内容
+            const elements = document.querySelectorAll('[data-zh][data-en]');
+            elements.forEach(el => {
+                if (el.tagName === 'INPUT') {
+                    el.placeholder = el.dataset[lang + 'Placeholder'] || el.dataset[lang];
+                } else {
+                    el.textContent = el.dataset[lang];
+                }
+            });
+        }
+
+        langButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                switchLanguage(this.dataset.lang);
+            });
+        });
+
+        // 搜索功能
+        const searchInput = document.getElementById('searchInput');
+        const categoryCards = document.querySelectorAll('.category-card');
+        const toolItems = document.querySelectorAll('.tool-item');
+        const filterTabs = document.querySelectorAll('.filter-tab');
+
+        // 搜索过滤
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            categoryCards.forEach(card => {
+                const categoryTitle = card.querySelector('.category-title').textContent.toLowerCase();
+                const tools = card.querySelectorAll('.tool-item');
+                let hasVisibleTools = false;
+                
+                tools.forEach(tool => {
+                    const toolName = tool.querySelector('.tool-name').textContent.toLowerCase();
+                    const toolDesc = tool.querySelector('.tool-desc').textContent.toLowerCase();
+                    
+                    if (toolName.includes(searchTerm) || toolDesc.includes(searchTerm) || categoryTitle.includes(searchTerm)) {
+                        tool.style.display = 'flex';
+                        hasVisibleTools = true;
+                    } else {
+                        tool.style.display = 'none';
+                    }
+                });
+                
+                card.style.display = hasVisibleTools ? 'block' : 'none';
+            });
+        });
+
+        // 分类过滤
+        filterTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const filter = this.dataset.filter;
+                
+                // 更新活跃标签
+                filterTabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // 过滤分类
+                categoryCards.forEach(card => {
+                    if (filter === 'all' || card.dataset.category === filter) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                
+                // 清空搜索
+                searchInput.value = '';
+                toolItems.forEach(tool => tool.style.display = 'flex');
+            });
+        });
+
+        // 添加动画效果
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // 初始化动画
+        categoryCards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = `opacity 0.6s ease ${index * 0.1}s, transform 0.6s ease ${index * 0.1}s`;
+            observer.observe(card);
+        });
+
+        // 统计数字动画
+        function animateNumbers() {
+            const statNumbers = document.querySelectorAll('.stat-number');
+            statNumbers.forEach(stat => {
+                const finalValue = stat.textContent;
+                const isNumber = !isNaN(parseInt(finalValue));
+                
+                if (isNumber) {
+                    const target = parseInt(finalValue);
+                    let current = 0;
+                    const increment = target / 30;
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= target) {
+                            stat.textContent = finalValue;
+                            clearInterval(timer);
+                        } else {
+                            stat.textContent = Math.floor(current) + '+';
+                        }
+                    }, 50);
+                }
+            });
+        }
+
+        // 页面加载完成后执行动画
+        window.addEventListener('load', () => {
+            setTimeout(animateNumbers, 500);
+        });
+    </script>
+</body>
+</html>
